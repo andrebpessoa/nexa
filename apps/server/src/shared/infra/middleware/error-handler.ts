@@ -1,6 +1,4 @@
-import type { ErrorTracker } from "@nexa/analytics";
 import type { Elysia } from "elysia";
-import { container } from "tsyringe";
 import {
 	type DomainError,
 	toErrorResponse,
@@ -25,10 +23,10 @@ export const errorHandler = (app: Elysia) =>
 			});
 		}
 
-		const errorTracker = container.resolve<ErrorTracker>("ErrorTracker");
-		errorTracker.captureException(error, {
+		console.error("[server] Unhandled error:", {
 			path: new URL(request.url).pathname,
 			method: request.method,
+			error,
 		});
 
 		return new Response(

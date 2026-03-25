@@ -1,6 +1,5 @@
 import { cors } from "@elysiajs/cors";
 import { openapi } from "@elysiajs/openapi";
-import type { ErrorTracker } from "@nexa/analytics";
 import type { Auth } from "@nexa/auth";
 import { env } from "@nexa/env/server";
 import { Elysia } from "elysia";
@@ -124,9 +123,6 @@ async function shutdown(signal: string) {
 	console.log(`Received ${signal}, shutting down gracefully...`);
 
 	server.stop(true);
-
-	const errorTracker = container.resolve<ErrorTracker>("ErrorTracker");
-	await errorTracker.shutdown();
 
 	const { db } = await import("@nexa/db");
 	await (db.$client as ClosableDbClient).end();

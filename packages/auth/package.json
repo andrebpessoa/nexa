@@ -16,8 +16,7 @@
 	"dependencies": {
 		"@nexa/db": "workspace:*",
 		"@nexa/env": "workspace:*",
-		"@nexa/transactional": "workspace:*",
-		"better-auth": "catalog:",
+"better-auth": "catalog:",
 		"dotenv": "catalog:",
 		"zod": "catalog:"
 	},

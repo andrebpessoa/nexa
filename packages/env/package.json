@@ -5,8 +5,7 @@
 	"type": "module",
 	"exports": {
 		"./server": "./src/server.ts",
-		"./storefront": "./src/storefront.ts",
-		"./admin": "./src/admin.ts"
+"./admin": "./src/admin.ts"
 	},
 	"scripts": {
 		"check-types": "bunx tsgo --noEmit",

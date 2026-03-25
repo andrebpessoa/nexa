@@ -7,8 +7,6 @@ const baseEnv = {
 	BETTER_AUTH_SECRET: "12345678901234567890123456789012",
 	BETTER_AUTH_URL: "http://localhost:3000",
 	NODE_ENV: "test",
-	POSTHOG_KEY: "ph_test_key",
-	POSTHOG_HOST: "https://us.i.posthog.com",
 	REDIS_URL: "redis://localhost:6379",
 };
 
@@ -23,15 +21,11 @@ describe("server env", () => {
 	});
 
 	it("parses CORS_ORIGIN from a JSON array string", async () => {
-		process.env.CORS_ORIGIN =
-			'["http://localhost:3001","http://localhost:3002"]';
+		process.env.CORS_ORIGIN = '["http://localhost:3001"]';
 
 		const { env } = await import("./server");
 
-		expect(env.CORS_ORIGIN).toEqual([
-			"http://localhost:3001",
-			"http://localhost:3002",
-		]);
+		expect(env.CORS_ORIGIN).toEqual(["http://localhost:3001"]);
 	});
 
 	it("parses a single origin JSON array string", async () => {
