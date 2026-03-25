@@ -6,7 +6,7 @@
 	"exports": {
 		"./globals.css": "./src/styles/globals.css",
 		"./themes/admin.css": "./src/styles/themes/admin.css",
-"./lib/*": "./src/lib/*.ts",
+		"./lib/*": "./src/lib/*.ts",
 		"./components/*": "./src/components/*.tsx",
 		"./hooks/*": "./src/hooks/*.ts",
 		"./postcss.config": "./postcss.config.mjs"
