@@ -36,6 +36,7 @@
 		"@testcontainers/postgresql": "^11.13.0",
 		"@types/bun": "catalog:",
 		"@typescript/native-preview": "latest",
+		"postgres": "^3.4.8",
 		"testcontainers": "^11.13.0",
 		"tsdown": "^0.16.8",
 		"vitest": "^4.1.1"
