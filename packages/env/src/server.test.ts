@@ -8,6 +8,12 @@ const baseEnv = {
 	BETTER_AUTH_URL: "http://localhost:3000",
 	NODE_ENV: "test",
 	REDIS_URL: "redis://localhost:6379",
+	SMTP_HOST: "smtp.test.com",
+	SMTP_PORT: "465",
+	SMTP_SECURE: "true",
+	SMTP_USER: "test@test.com",
+	SMTP_PASS: "test-password",
+	EMAIL_FROM: "noreply@test.com",
 };
 
 describe("server env", () => {
