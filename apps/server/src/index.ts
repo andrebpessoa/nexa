@@ -77,9 +77,7 @@ const app = new Elysia({ serve: { maxRequestBodySize: 1 * 1024 * 1024 } })
 
 		try {
 			const { db } = await import("@nexa/db");
-			await (db.$client as { query(sql: string): Promise<unknown> }).query(
-				"SELECT 1",
-			);
+			await db.$client`SELECT 1`;
 			checks.database = "ok";
 		} catch {
 			checks.database = "error";
@@ -110,9 +108,6 @@ const server = app.listen(env.PORT, () => {
 });
 
 let isShuttingDown = false;
-type ClosableDbClient = {
-	end(): Promise<void>;
-};
 
 async function shutdown(signal: string) {
 	if (isShuttingDown) {
@@ -125,7 +120,7 @@ async function shutdown(signal: string) {
 	server.stop(true);
 
 	const { db } = await import("@nexa/db");
-	await (db.$client as ClosableDbClient).end();
+	await db.$client.end();
 
 	const { redisClient } = await import("./shared/infra/cache/redis-client.ts");
 	redisClient.close(); // Bun Redis close() is synchronous

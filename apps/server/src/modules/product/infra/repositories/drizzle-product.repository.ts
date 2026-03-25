@@ -157,7 +157,8 @@ export class DrizzleProductRepository implements ProductRepository {
 			await this.db
 				.insert(product)
 				.values(data)
-				.onDuplicateKeyUpdate({
+				.onConflictDoUpdate({
+					target: product.id,
 					set: {
 						name: data.name,
 						description: data.description,

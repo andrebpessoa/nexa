@@ -69,7 +69,12 @@ export class DrizzleUserPermissionRepository
 			await this.db
 				.insert(userPermission)
 				.values(data)
-				.onDuplicateKeyUpdate({
+				.onConflictDoUpdate({
+					target: [
+						userPermission.userId,
+						userPermission.resource,
+						userPermission.action,
+					],
 					set: { granted: data.granted },
 				});
 			return ok(undefined);

@@ -1,20 +1,19 @@
 name: nexa
 
 services:
-  mysql:
-    image: mysql
-    container_name: nexa-mysql
+  postgres:
+    image: postgres:17-alpine
+    container_name: nexa-postgres
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: nexa
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: nexa
+      POSTGRES_USER: user
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - nexa_mysql_data:/var/lib/mysql
+      - nexa_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U user -d nexa"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,5 +34,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  nexa_mysql_data:
+  nexa_postgres_data:
   nexa_redis_data:

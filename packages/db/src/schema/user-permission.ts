@@ -1,14 +1,14 @@
 import {
 	boolean,
 	index,
-	mysqlTable,
+	pgTable,
 	timestamp,
 	unique,
 	varchar,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/pg-core";
 import { user } from "./auth.ts";
 
-export const userPermission = mysqlTable(
+export const userPermission = pgTable(
 	"user_permission",
 	{
 		id: varchar("id", { length: 36 }).primaryKey(),
@@ -18,7 +18,7 @@ export const userPermission = mysqlTable(
 		resource: varchar("resource", { length: 64 }).notNull(),
 		action: varchar("action", { length: 64 }).notNull(),
 		granted: boolean("granted").notNull(),
-		createdAt: timestamp("created_at", { fsp: 3 }).defaultNow().notNull(),
+		createdAt: timestamp("created_at", { precision: 3 }).defaultNow().notNull(),
 	},
 	(table) => [
 		unique("user_permission_unique_idx").on(

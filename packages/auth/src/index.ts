@@ -9,7 +9,7 @@ import { ac, admin, member } from "./permissions.ts";
 export function createAuth() {
 	return betterAuth({
 		database: drizzleAdapter(db, {
-			provider: "mysql", // Changed to "pg" in Stage 3
+			provider: "pg",
 			schema,
 		}),
 		trustedOrigins: env.CORS_ORIGIN,

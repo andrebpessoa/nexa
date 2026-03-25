@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { product } from "@nexa/db/schema/product";
-import type { StartedMySqlContainer } from "@testcontainers/mysql";
+import type { StartedPostgreSqlContainer } from "@testcontainers/postgresql";
 import { eq } from "drizzle-orm";
 import {
 	GenericContainer,
@@ -49,7 +49,7 @@ async function flushRedis(redis: Bun.RedisClient): Promise<void> {
 
 describe("DrizzleProductRepository", () => {
 	let db: Awaited<ReturnType<typeof setupTestDatabase>>["db"];
-	let mysqlContainer: StartedMySqlContainer | undefined;
+	let pgContainer: StartedPostgreSqlContainer | undefined;
 	let redisContainer: StartedTestContainer | undefined;
 	let redisClient: Bun.RedisClient;
 	let repo: DrizzleProductRepository;
@@ -57,7 +57,7 @@ describe("DrizzleProductRepository", () => {
 	beforeAll(async () => {
 		const result = await setupTestDatabase();
 		db = result.db;
-		mysqlContainer = result.container;
+		pgContainer = result.container;
 
 		redisContainer = await new GenericContainer("redis:7-alpine")
 			.withExposedPorts(6379)
@@ -78,8 +78,8 @@ describe("DrizzleProductRepository", () => {
 		if (redisContainer) {
 			await redisContainer.stop();
 		}
-		if (mysqlContainer) {
-			await teardownTestDatabase(mysqlContainer);
+		if (pgContainer) {
+			await teardownTestDatabase(pgContainer);
 		}
 	});
 

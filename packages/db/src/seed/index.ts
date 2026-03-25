@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
-import { drizzle } from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/postgres-js";
 import { reset, seed } from "drizzle-seed";
+import postgres from "postgres";
 import * as schema from "../schema/index.ts";
 import { relations } from "../schema/relations.ts";
 import { productSeedPreset } from "./tables/product.seed.ts";
@@ -15,13 +16,11 @@ async function main() {
 		throw new Error("DATABASE_URL is required to run db:seed.");
 	}
 
+	const client = postgres(databaseUrl);
 	const db = drizzle({
-		connection: {
-			uri: databaseUrl,
-		},
+		client,
 		schema,
 		relations,
-		mode: "default",
 	});
 
 	try {
@@ -52,7 +51,7 @@ async function main() {
 
 		console.log(`Seed completed with ${productSeedPreset.count} products.`);
 	} finally {
-		await db.$client.end();
+		await client.end();
 	}
 }
 

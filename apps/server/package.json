@@ -33,7 +33,7 @@
 	},
 	"devDependencies": {
 		"@nexa/config": "workspace:*",
-		"@testcontainers/mysql": "^11.13.0",
+		"@testcontainers/postgresql": "^11.13.0",
 		"@types/bun": "catalog:",
 		"@typescript/native-preview": "latest",
 		"testcontainers": "^11.13.0",

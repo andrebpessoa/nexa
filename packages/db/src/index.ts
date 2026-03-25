@@ -1,20 +1,18 @@
 import { env } from "@nexa/env/server";
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 
 import * as schema from "./schema/index.ts";
 import { relations } from "./schema/relations.ts";
 
-const pool = mysql.createPool({
-	uri: env.DATABASE_URL,
-	connectionLimit: env.DB_POOL_SIZE,
-connectTimeout: env.DB_CONNECTION_TIMEOUT,
-	waitForConnections: true,
+const client = postgres(env.DATABASE_URL, {
+	max: env.DB_POOL_SIZE,
+	connect_timeout: env.DB_CONNECTION_TIMEOUT / 1000,
+	idle_timeout: 30,
 });
 
 export const db = drizzle({
-	client: pool,
+	client,
 	schema,
 	relations,
-	mode: "default",
 });

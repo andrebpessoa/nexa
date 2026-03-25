@@ -1,1 +1,0 @@
-ALTER TABLE `product` ADD `deleted_at` timestamp(3);

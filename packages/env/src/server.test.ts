@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const ORIGINAL_ENV = process.env;
 
 const baseEnv = {
-	DATABASE_URL: "mysql://user:password@localhost:3306/nexa",
+	DATABASE_URL: "postgresql://user:password@localhost:5432/nexa",
 	BETTER_AUTH_SECRET: "12345678901234567890123456789012",
 	BETTER_AUTH_URL: "http://localhost:3000",
 	NODE_ENV: "test",
