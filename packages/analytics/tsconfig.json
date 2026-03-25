@@ -1,8 +1,0 @@
-{
-	"extends": "@nexa/config/tsconfig.base.json",
-	"compilerOptions": {
-		"jsx": "react-jsx",
-		"outDir": "dist"
-	},
-	"include": ["src"]
-}
