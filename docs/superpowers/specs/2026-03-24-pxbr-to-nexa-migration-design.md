@@ -33,7 +33,8 @@ Global find/replace across the entire codebase (excluding `node_modules`, `bun.l
 |---|---|---|
 | `@pxbr/` | `@nexa/` | package names, dependencies, imports, tsconfig extends, shadcn aliases, tsdown regex |
 | `"pxbr"` (root package name) | `"nexa"` | `package.json` root |
-| `pxbr-mysql`, `pxbr-redis` | `nexa-postgres`, `nexa-redis` | `docker-compose.yml` service/volume names |
+| `pxbr-mysql`, `pxbr-redis` | `nexa-mysql`, `nexa-redis` | `docker-compose.yml` service/container names (interim; Stage 3 replaces mysql with postgres) |
+| `pxbr_mysql_data`, `pxbr_redis_data` | `nexa_mysql_data`, `nexa_redis_data` | `docker-compose.yml` volume names (interim; Stage 3 replaces mysql volume) |
 | `pxbr` (database name in URLs) | `nexa` | `.env.example`, env test files |
 | `PXBR Admin` | `Nexa Admin` | UI strings in admin app (titles, headings) |
 | `PXBR API` | `Nexa API` | OpenAPI title in server index |
@@ -51,6 +52,7 @@ Global find/replace across the entire codebase (excluding `node_modules`, `bun.l
 - 2 `.env.example` / `.env.test` files
 - 5+ files with UI branding strings
 - `README.md`, `CLAUDE.md`
+- `packages/env/src/admin.ts` (verify for pxbr references)
 
 ### Post-step
 
@@ -79,10 +81,15 @@ Global find/replace across the entire codebase (excluding `node_modules`, `bun.l
 
 **`apps/server/src/container.ts`:**
 - Remove `ErrorTracker` DI registration (analytics)
-- Remove imports from `@nexa/analytics`
+- Remove `createEmailClient` import and the entire `emailClient` creation block
+- Remove all imports from `@nexa/analytics` and `@nexa/transactional`
+- Update `createAuth` call if it depends on `emailClient` parameter
 
 **`apps/server/src/index.ts`:**
-- Remove `@nexa/analytics` imports if any remain
+- Remove `import type { ErrorTracker } from "@nexa/analytics"`
+- Remove `container.resolve<ErrorTracker>("ErrorTracker")` call
+- Remove `await errorTracker.shutdown()` from the shutdown function
+- Remove any other `@nexa/analytics` imports
 
 **`apps/server/package.json`:**
 - Remove `@nexa/analytics` and `@nexa/transactional` dependencies
@@ -94,11 +101,18 @@ Global find/replace across the entire codebase (excluding `node_modules`, `bun.l
 - Remove SMTP env vars (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM`)
 - Remove PostHog env vars (`POSTHOG_KEY`, `POSTHOG_HOST`)
 
+**`packages/env/src/server.test.ts`:**
+- Remove `POSTHOG_KEY` and `POSTHOG_HOST` from `baseEnv` fixture
+- Remove any SMTP-related test assertions
+
 **`packages/env/src/storefront.ts`:**
 - Delete file entirely
 
 **`apps/server/.env.example`:**
 - Remove SMTP and PostHog sections
+
+**`packages/env/src/server.ts` (CORS_ORIGIN):**
+- Remove storefront port (3002) from the default CORS_ORIGIN array, keep only admin port (3001)
 
 **`package.json` (root):**
 - Remove `dev:storefront` and `dev:transactional` scripts
@@ -120,6 +134,7 @@ Global find/replace across the entire codebase (excluding `node_modules`, `bun.l
 | `import { ... } from "drizzle-orm/mysql-core"` | `import { ... } from "drizzle-orm/pg-core"` |
 | `mysqlTable(...)` | `pgTable(...)` |
 | `datetime(...)` | `timestamp(...)` |
+| `{ fsp: 3 }` (datetime option) | `{ precision: 3 }` (timestamp option) |
 | `int(...)` | `integer(...)` |
 | `mysqlEnum(...)` | `pgEnum(...)` |
 | `varchar(...)` | `varchar(...)` (no change) |
@@ -128,10 +143,36 @@ Global find/replace across the entire codebase (excluding `node_modules`, `bun.l
 
 Files: `product.ts`, `user-permission.ts`, `auth.ts`, `relations.ts`, `index.ts`
 
+Note: `{ fsp: 3 }` appears in 17+ timestamp columns across all schema files. Every occurrence must change to `{ precision: 3 }`.
+
+### Drizzle config (`packages/db/drizzle.config.ts`)
+
+- Change `dialect: "mysql"` to `dialect: "postgresql"`
+- Update connection string format if hardcoded
+
 ### Connection (`packages/db/src/index.ts`)
 
-- Replace `mysql2` driver with `postgres` (postgres.js)
+- Replace `mysql2` driver import with `postgres` (postgres.js)
 - Update `drizzle()` call to use PG adapter
+- Remove `mode: "default"` option (MySQL-specific, does not exist in PG adapter)
+- Translate connection pool options: `connectionLimit` → `max`, `connectTimeout` → `connect_timeout`, remove `queueLimit`/`waitForConnections` (not applicable to postgres.js)
+
+### Health check and shutdown (`apps/server/src/index.ts`)
+
+- The health check uses `db.$client.query("SELECT 1")` which is mysql2 API
+- postgres.js uses tagged template literals: `` sql`SELECT 1` ``
+- Update the health check to use the postgres.js API
+- Update the shutdown function's `db.$client.end()` call if the type cast changes
+
+### Seed script (`packages/db/src/seed/index.ts`)
+
+- Replace `drizzle-orm/mysql2` import with postgres.js equivalent
+- Replace mysql2 connection creation with postgres.js connection
+- Remove `mode: "default"` from `drizzle()` call
+
+### Better Auth adapter (`packages/auth/src/index.ts`)
+
+- Change `provider: "mysql"` to `provider: "pg"` in the Drizzle adapter configuration
 
 ### Dependencies
 
@@ -149,7 +190,8 @@ Replace MySQL service with PostgreSQL:
 - Image: `postgres:17-alpine`
 - Port: `5432`
 - Env: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
-- Volume: `nexa_postgres_data`
+- Volume: `nexa_postgres_data` (replace `nexa_mysql_data`)
+- Rename service from `nexa-mysql` to `nexa-postgres`
 
 Keep Redis service as-is (already renamed to `nexa-redis` in Stage 1).
 
@@ -160,6 +202,7 @@ Keep Redis service as-is (already renamed to `nexa-redis` in Stage 1).
 
 **`packages/env/src/server.ts`:**
 - Update DATABASE_URL validation/default if it references MySQL format
+- Review pool-related env vars (`DB_POOL_SIZE`, `DB_QUEUE_LIMIT`, `DB_CONNECTION_TIMEOUT`) — rename or remove as needed to match postgres.js option names
 
 **`packages/env/src/server.test.ts`:**
 - Update test DATABASE_URL to PostgreSQL format
@@ -168,7 +211,9 @@ Keep Redis service as-is (already renamed to `nexa-redis` in Stage 1).
 
 **`apps/server/test/helpers/test-container.ts`:**
 - Replace `MySqlContainer` with `PostgreSqlContainer` from `@testcontainers/postgresql`
-- Update connection string construction
+- Replace `drizzle-orm/mysql2/migrator` import with `drizzle-orm/postgres-js/migrator` (or equivalent)
+- Remove `mode: "default"` from `drizzle()` call
+- Update connection string construction for PostgreSQL format
 
 ### Better Auth tables
 
@@ -181,6 +226,7 @@ Keep Redis service as-is (already renamed to `nexa-redis` in Stage 1).
 - Run `bun install`
 - Typecheck
 - Run tests (testcontainers will spin up PostgreSQL)
+- Test `bun run db:seed` explicitly
 
 ---
 
