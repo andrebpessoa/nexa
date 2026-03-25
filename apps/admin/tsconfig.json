@@ -1,0 +1,29 @@
+{
+	"include": ["**/*.ts", "**/*.tsx"],
+	"compilerOptions": {
+		"target": "ES2022",
+		"jsx": "react-jsx",
+		"module": "ESNext",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"types": ["vite/client"],
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"noEmit": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true,
+		"experimentalDecorators": true,
+		"paths": {
+			"@/*": ["./src/*"],
+			"@/container.ts": ["../server/src/container.ts"],
+			"@/shared/components/*": ["./src/shared/components/*"],
+			"@/shared/*": ["../server/src/shared/*"],
+			"@nexa/ui/*": ["../../packages/ui/src/*"],
+			"@server": ["../server/src/index.ts"]
+		}
+	}
+}

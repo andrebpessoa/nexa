@@ -1,0 +1,28 @@
+{
+	"name": "@nexa/auth",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		},
+		"./*": {
+			"default": "./src/*.ts"
+		}
+	},
+	"scripts": {
+		"check-types": "bunx tsgo --noEmit",
+		"lint": "biome check ."
+	},
+	"dependencies": {
+		"@nexa/db": "workspace:*",
+		"@nexa/env": "workspace:*",
+		"@nexa/transactional": "workspace:*",
+		"better-auth": "catalog:",
+		"dotenv": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@nexa/config": "workspace:*",
+		"@typescript/native-preview": "latest"
+	}
+}

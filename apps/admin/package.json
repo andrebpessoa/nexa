@@ -1,0 +1,42 @@
+{
+	"name": "@nexa/admin",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "vite build",
+		"check-types": "bunx tsgo --noEmit",
+		"lint": "biome check .",
+		"dev": "vite dev",
+		"serve": "vite preview"
+	},
+	"dependencies": {
+		"@elysiajs/eden": "^1.4.8",
+		"@nexa/auth": "workspace:*",
+		"@nexa/env": "workspace:*",
+		"@nexa/server": "workspace:*",
+		"@nexa/ui": "workspace:*",
+		"@tanstack/react-form": "^1.28.5",
+		"@tanstack/react-query": "^5.95.2",
+		"@tanstack/react-router": "^1.168.3",
+		"@tanstack/router-plugin": "^1.167.4",
+		"better-auth": "catalog:",
+		"lucide-react": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:",
+		"react-error-boundary": "^6.1.1",
+		"sonner": "catalog:",
+		"tailwindcss": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@nexa/config": "workspace:*",
+		"@tailwindcss/vite": "^4.2.2",
+		"@tanstack/react-router-devtools": "^1.166.11",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"@typescript/native-preview": "latest",
+		"@vitejs/plugin-react": "^5.2.0",
+		"vite": "^7.3.1",
+		"vite-tsconfig-paths": "^5.1.4"
+	}
+}

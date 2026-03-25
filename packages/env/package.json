@@ -1,0 +1,27 @@
+{
+	"name": "@nexa/env",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./server": "./src/server.ts",
+		"./storefront": "./src/storefront.ts",
+		"./admin": "./src/admin.ts"
+	},
+	"scripts": {
+		"check-types": "bunx tsgo --noEmit",
+		"lint": "biome check .",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@t3-oss/env-core": "^0.13.11",
+		"dotenv": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@nexa/config": "workspace:*",
+		"@types/bun": "catalog:",
+		"@typescript/native-preview": "latest",
+		"vitest": "^4.1.1"
+	}
+}

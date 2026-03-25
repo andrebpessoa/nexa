@@ -1,0 +1,13 @@
+import { createEnv } from "@t3-oss/env-core";
+import { z } from "zod";
+
+export const env = createEnv({
+	clientPrefix: "VITE_",
+	client: {
+		VITE_SERVER_URL: z.url(),
+		VITE_PUBLIC_POSTHOG_KEY: z.string().min(1),
+		VITE_PUBLIC_POSTHOG_HOST: z.url(),
+	},
+	runtimeEnv: import.meta.env as Record<string, string | undefined>,
+	emptyStringAsUndefined: true,
+});

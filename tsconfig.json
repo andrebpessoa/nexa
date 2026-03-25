@@ -1,0 +1,7 @@
+{
+	"extends": "@nexa/config/tsconfig.base.json",
+	"compilerOptions": {
+		"strictNullChecks": true,
+		"experimentalDecorators": true
+	}
+}

@@ -1,0 +1,13 @@
+{
+	"extends": "@nexa/config/tsconfig.base.json",
+	"compilerOptions": {
+		"composite": true,
+		"outDir": "dist",
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+		"jsx": "react-jsx",
+		"strictNullChecks": true,
+		"experimentalDecorators": true
+	}
+}
